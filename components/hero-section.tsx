@@ -2,7 +2,19 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, TrendingUp, Globe } from 'lucide-react';
+import {
+  ArrowRight,
+  Sparkles,
+  TrendingUp,
+  Globe,
+  Code,
+  Mail,
+  MessageCircle,
+  Send,
+  Phone,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSocials } from '@/context/social-context';
 
 const badges = [
   { icon: Globe, label: 'Web3 Marketing' },
@@ -35,6 +47,29 @@ const floatingCards = [
 ];
 
 export default function HeroSection() {
+  const { socials, fetchSocials } = useSocials();
+  const [displaySocials, setDisplaySocials] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchSocials();
+  }, []);
+
+  useEffect(() => {
+    if (socials && socials.length > 0) {
+      setDisplaySocials(socials);
+    }
+  }, [socials]);
+
+  const getSocialIcon = (platform: string) => {
+    const platformLower = platform.toLowerCase();
+    if (platformLower.includes('twitter') || platformLower.includes('x')) return Mail;
+    if (platformLower.includes('github')) return Code;
+    if (platformLower.includes('telegram')) return Send;
+    if (platformLower.includes('discord')) return MessageCircle;
+    if (platformLower.includes('whatsapp')) return Phone;
+    return Globe;
+  };
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden grid-bg">
       {/* Hero gradient overlay */}
@@ -74,7 +109,7 @@ export default function HeroSection() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-heading text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-balance"
             >
-              Software & <span className="text-primary glow-text">Web3</span>{' '}
+              Software Engineer & <span className="text-primary glow-text">Web3</span>{' '}
               <br className="hidden sm:block" />
               Marketer
             </motion.h1>
@@ -91,44 +126,145 @@ export default function HeroSection() {
               through strategic marketing and community development.
             </motion.p>
 
-            {/* Skill badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap gap-2"
-            >
-              {badges.map(({ icon: Icon, label }) => (
-                <span
-                  key={label}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-muted-foreground text-sm"
-                >
-                  <Icon size={13} className="text-primary" />
-                  {label}
-                </span>
-              ))}
-            </motion.div>
-
             {/* CTAs */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap gap-3"
+              className="flex flex-col gap-4"
             >
-              <Link
-                href="/projects"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all duration-200 glow-cyan group"
-              >
-                View My Work
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-foreground font-semibold text-sm hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
-              >
-                Get In Touch
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/projects"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all duration-200 glow-cyan group"
+                >
+                  View My Work
+                  <ArrowRight
+                    size={16}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </Link>
+                <a
+                  href="/cv.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-foreground font-semibold text-sm hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+                >
+                  View CV
+                </a>
+              </div>
+
+              {/* Social Links */}
+              <div className="flex items-center gap-3 pt-2">
+                <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">
+                  Connect:
+                </span>
+                <div className="flex flex-wrap gap-3">
+                  {displaySocials.length > 0 ? (
+                    displaySocials.map((social) => {
+                      const Icon = getSocialIcon(social.platform);
+                      return (
+                        <motion.div
+                          key={social.platform}
+                          className="group relative flex items-center gap-2"
+                        >
+                          <motion.a
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-200"
+                          >
+                            <Icon size={16} />
+                          </motion.a>
+                          <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-200 font-medium whitespace-nowrap">
+                            {social.label}
+                          </span>
+                        </motion.div>
+                      );
+                    })
+                  ) : (
+                    <>
+                      <motion.div className="group relative flex items-center gap-2">
+                        <motion.a
+                          href="https://github.com/cryptoosiz"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-200"
+                        >
+                          <Code size={16} />
+                        </motion.a>
+                        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-200 font-medium whitespace-nowrap">
+                          GitHub
+                        </span>
+                      </motion.div>
+                      <motion.div className="group relative flex items-center gap-2">
+                        <motion.a
+                          href="https://https://x.com/cryptoosiz?s=11"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-200"
+                        >
+                          <Mail size={16} />
+                        </motion.a>
+                        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-200 font-medium whitespace-nowrap">
+                          Twitter
+                        </span>
+                      </motion.div>
+                      <motion.div className="group relative flex items-center gap-2">
+                        <motion.a
+                          href="https://t.me/cryptoosiz"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-200"
+                        >
+                          <Send size={16} />
+                        </motion.a>
+                        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-200 font-medium whitespace-nowrap">
+                          Telegram
+                        </span>
+                      </motion.div>
+                      <motion.div className="group relative flex items-center gap-2">
+                        <motion.a
+                          href="https://discordapp.com/users/880482971340132434"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-200"
+                        >
+                          <MessageCircle size={16} />
+                        </motion.a>
+                        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-200 font-medium whitespace-nowrap">
+                          Discord
+                        </span>
+                      </motion.div>
+                      <motion.div className="group relative flex items-center gap-2">
+                        <motion.a
+                          href="https://w.me/+2347061506374"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-primary/10 flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-200"
+                        >
+                          <Phone size={16} />
+                        </motion.a>
+                        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-200 font-medium whitespace-nowrap">
+                          WhatsApp
+                        </span>
+                      </motion.div>
+                    </>
+                  )}
+                </div>
+              </div>
             </motion.div>
           </div>
 
