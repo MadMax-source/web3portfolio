@@ -124,29 +124,6 @@ export default function ContactInfo() {
           ))}
         </ul>
       </div>
-
-      {/* Projects I work on */}
-
-      {/*
-      <div className="rounded-2xl border border-border bg-card p-7">
-        <h3 className="font-heading text-lg font-bold text-foreground mb-2">
-          Projects I Work With
-        </h3>
-        <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-          From early-stage launches to established protocols — if it lives on-chain, I&apos;ve marketed it.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {preferredStack.map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1.5 rounded-full text-xs font-mono bg-primary/10 border border-primary/20 text-primary"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-      */}
     </motion.div>
   );
 }
