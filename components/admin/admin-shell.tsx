@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import AdminSidebar from './admin-sidebar'
-import AdminDashboard from './admin-dashboard'
-import BlogManager from './blog-manager'
-import ProjectManager from './project-manager'
-import { Menu, X } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState } from 'react';
+import AdminSidebar from './admin-sidebar';
+import AdminDashboard from './admin-dashboard';
+import BlogManager from './blog-manager';
+import ProjectManager from './project-manager';
+import { Menu, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
-type Tab = 'dashboard' | 'blog' | 'projects'
+type Tab = 'dashboard' | 'blog' | 'projects';
 
 export default function AdminShell() {
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderPanel = () => {
-    if (activeTab === 'blog') return <BlogManager />
-    if (activeTab === 'projects') return <ProjectManager />
-    return <AdminDashboard setActiveTab={setActiveTab} />
-  }
+    if (activeTab === 'blog') return <BlogManager />;
+    if (activeTab === 'projects') return <ProjectManager />;
+    return <AdminDashboard setActiveTab={setActiveTab} />;
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -48,7 +48,10 @@ export default function AdminShell() {
             >
               <AdminSidebar
                 activeTab={activeTab}
-                setActiveTab={(tab) => { setActiveTab(tab as Tab); setSidebarOpen(false) }}
+                setActiveTab={(tab) => {
+                  setActiveTab(tab as Tab);
+                  setSidebarOpen(false);
+                }}
               />
             </motion.div>
           </>
@@ -94,5 +97,5 @@ export default function AdminShell() {
         </main>
       </div>
     </div>
-  )
+  );
 }

@@ -1,31 +1,68 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { FileText, Briefcase, Eye, TrendingUp, Plus } from 'lucide-react'
+import { motion } from 'framer-motion';
+import { FileText, Briefcase, Eye, TrendingUp, Plus } from 'lucide-react';
 
 const stats = [
-  { icon: FileText, label: 'Blog Posts', value: '24', change: '+3 this month', color: 'text-primary' },
-  { icon: Briefcase, label: 'Projects', value: '8', change: '+1 this month', color: 'text-primary' },
-  { icon: Eye, label: 'Total Views', value: '12.4K', change: '+18% this week', color: 'text-primary' },
-  { icon: TrendingUp, label: 'Newsletter Subs', value: '1,240', change: '+62 this week', color: 'text-primary' },
-]
+  {
+    icon: FileText,
+    label: 'Blog Posts',
+    value: '24',
+    change: '+3 this month',
+    color: 'text-primary',
+  },
+  {
+    icon: Briefcase,
+    label: 'Projects',
+    value: '8',
+    change: '+1 this month',
+    color: 'text-primary',
+  },
+  {
+    icon: Eye,
+    label: 'Total Views',
+    value: '12.4K',
+    change: '+18% this week',
+    color: 'text-primary',
+  },
+  {
+    icon: TrendingUp,
+    label: 'Newsletter Subs',
+    value: '1,240',
+    change: '+62 this week',
+    color: 'text-primary',
+  },
+];
 
 const recentPosts = [
-  { title: 'How to Launch a DeFi Token That Actually Gets Noticed', date: 'May 28, 2025', status: 'published' },
-  { title: 'Web3 Community Building in 2025: What Actually Works', date: 'May 14, 2025', status: 'published' },
-  { title: 'The 3 Growth Loops That Scaled My SaaS Client to $2M ARR', date: 'Apr 30, 2025', status: 'published' },
+  {
+    title: 'How to Launch a DeFi Token That Actually Gets Noticed',
+    date: 'May 28, 2025',
+    status: 'published',
+  },
+  {
+    title: 'Web3 Community Building in 2025: What Actually Works',
+    date: 'May 14, 2025',
+    status: 'published',
+  },
+  {
+    title: 'The 3 Growth Loops That Scaled My SaaS Client to $2M ARR',
+    date: 'Apr 30, 2025',
+    status: 'published',
+  },
   { title: 'Draft: Web3 Influencer Strategy Guide', date: 'Jun 1, 2025', status: 'draft' },
-]
+];
 
 const recentProjects = [
   { title: 'DeFi Protocol Launch', category: 'DeFi', status: 'published' },
   { title: 'SaaS Growth Campaign', category: 'SaaS', status: 'published' },
   { title: 'NFT Ecosystem Campaign', category: 'NFT', status: 'published' },
   { title: 'Layer 2 Bridge GTM', category: 'Web3', status: 'draft' },
-]
+];
+type Tab = 'dashboard' | 'blog' | 'projects';
 
 interface AdminDashboardProps {
-  setActiveTab: (tab: string) => void
+  setActiveTab: (tab: Tab) => void;
 }
 
 export default function AdminDashboard({ setActiveTab }: AdminDashboardProps) {
@@ -35,7 +72,9 @@ export default function AdminDashboard({ setActiveTab }: AdminDashboardProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading font-bold text-2xl text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-1">Welcome back. Here is what is happening.</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Welcome back. Here is what is happening.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -124,7 +163,10 @@ export default function AdminDashboard({ setActiveTab }: AdminDashboardProps) {
           </div>
           <ul className="divide-y divide-border">
             {recentProjects.map((project) => (
-              <li key={project.title} className="flex items-center justify-between gap-4 px-6 py-3.5">
+              <li
+                key={project.title}
+                className="flex items-center justify-between gap-4 px-6 py-3.5"
+              >
                 <div className="flex flex-col gap-0.5 min-w-0">
                   <p className="text-sm text-foreground font-medium truncate">{project.title}</p>
                   <p className="text-xs text-muted-foreground font-mono">{project.category}</p>
@@ -144,5 +186,5 @@ export default function AdminDashboard({ setActiveTab }: AdminDashboardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

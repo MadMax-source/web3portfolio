@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion';
 
 export default function ProjectsHero() {
   return (
@@ -14,7 +14,7 @@ export default function ProjectsHero() {
           transition={{ duration: 0.5 }}
           className="text-primary font-mono text-sm tracking-widest uppercase mb-4"
         >
-          — Portfolio
+          — Project
         </motion.p>
 
         <motion.h1
@@ -23,21 +23,10 @@ export default function ProjectsHero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-heading text-5xl sm:text-6xl lg:text-7xl font-extrabold text-balance leading-tight mb-6"
         >
-          Work That{' '}
-          <span className="text-primary glow-text">Moves</span>
+          Tasks <span className="text-primary glow-text">Cryptosiz</span>
           <br />
-          the Needle
+          Have Worked On
         </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-muted-foreground text-lg leading-relaxed max-w-2xl"
-        >
-          A curated selection of campaigns, launches, and growth initiatives
-          across Web3 ecosystems and software products. Real results, real impact.
-        </motion.p>
 
         {/* Divider line */}
         <motion.div
@@ -48,5 +37,5 @@ export default function ProjectsHero() {
         />
       </div>
     </section>
-  )
+  );
 }

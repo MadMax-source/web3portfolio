@@ -1,17 +1,19 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { LayoutDashboard, FileText, Briefcase, Eye, LogOut, ChevronRight } from 'lucide-react'
+import Link from 'next/link';
+import { LayoutDashboard, FileText, Briefcase, Eye, LogOut, ChevronRight } from 'lucide-react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
   { icon: FileText, label: 'Blog Posts', id: 'blog' },
   { icon: Briefcase, label: 'Projects', id: 'projects' },
-]
+];
+
+type Tab = 'dashboard' | 'blog' | 'projects';
 
 interface AdminSidebarProps {
-  activeTab: string
-  setActiveTab: (tab: string) => void
+  activeTab: Tab;
+  setActiveTab: React.Dispatch<React.SetStateAction<Tab>>;
 }
 
 export default function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
@@ -24,7 +26,7 @@ export default function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarPr
         </div>
         <div>
           <p className="font-heading font-bold text-foreground text-sm leading-none">
-            Alex<span className="text-primary">.</span>
+            Cryptosiz<span className="text-primary">.</span>
           </p>
           <p className="text-muted-foreground text-xs mt-0.5">Admin Panel</p>
         </div>
@@ -37,11 +39,11 @@ export default function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarPr
         </p>
         <ul className="flex flex-col gap-1">
           {navItems.map(({ icon: Icon, label, id }) => {
-            const isActive = activeTab === id
+            const isActive = activeTab === id;
             return (
               <li key={id}>
                 <button
-                  onClick={() => setActiveTab(id)}
+                  onClick={() => setActiveTab(id as Tab)}
                   className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
                     isActive
                       ? 'bg-primary/15 text-primary border border-primary/25'
@@ -55,7 +57,7 @@ export default function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarPr
                   {isActive && <ChevronRight size={14} className="text-primary" />}
                 </button>
               </li>
-            )
+            );
           })}
         </ul>
 
@@ -82,5 +84,5 @@ export default function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarPr
         </button>
       </div>
     </aside>
-  )
+  );
 }

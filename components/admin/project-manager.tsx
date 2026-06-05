@@ -1,49 +1,142 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Edit2, Trash2, CheckCircle, X, Save } from 'lucide-react'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Trash2, CheckCircle, X, Save, Loader2 } from 'lucide-react';
 
-const categories = ['Web3', 'DeFi', 'NFT', 'SaaS', 'Community', 'Layer 2']
+import { useProjects } from '@/context/project-context';
 
-const initialProjects = [
-  { id: 1, title: 'DeFi Protocol Launch', category: 'DeFi', results: '$12M raised, 45K community members', status: 'published' },
-  { id: 2, title: 'SaaS Growth Campaign', category: 'SaaS', results: '380% MRR growth in 6 months', status: 'published' },
-  { id: 3, title: 'NFT Ecosystem Campaign', category: 'NFT', results: 'Sold out in 48h, 8M impressions', status: 'published' },
-  { id: 4, title: 'Web3 Community Building', category: 'Community', results: '28K Discord members, 42% WAU', status: 'published' },
-  { id: 5, title: 'Layer 2 Bridge GTM', category: 'Layer 2', results: 'Draft — strategy in progress', status: 'draft' },
-]
-
-type FormMode = 'idle' | 'new' | 'edit'
+type FormMode = 'idle' | 'new';
 
 const emptyForm = {
-  title: '', category: '', description: '', results: '',
-  tags: '', link: '', status: 'draft' as 'draft' | 'published',
-}
+  title: '',
+  description: '',
+  longDescription: '',
+  category: '',
 
-export default function ProjectManager() {
-  const [projects, setProjects] = useState(initialProjects)
-  const [mode, setMode] = useState<FormMode>('idle')
-  const [form, setForm] = useState(emptyForm)
-  const [saved, setSaved] = useState(false)
+  technologies: '',
+  features: '',
 
-  const inputClass = 'w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all duration-200'
-  const labelClass = 'block text-sm font-medium text-foreground mb-1.5'
+  liveUrl: '',
+  githubUrl: '',
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!form.title) return
-    if (mode === 'new') {
-      setProjects((prev) => [
-        { id: Date.now(), title: form.title, category: form.category || 'Web3', results: form.results || '—', status: form.status },
+  challenges: '',
+  duration: '',
+  role: '',
+
+  imagePreview: '',
+};
+
+export default function ProjectManagement() {
+  const { projects, createProject, deleteProject, loading } = useProjects();
+
+  const [techInput, setTechInput] = useState('');
+
+  const [technologies, setTechnologies] = useState<{ id: string; name: string }[]>([]);
+
+  const [mode, setMode] = useState<FormMode>('idle');
+
+  const [saved, setSaved] = useState(false);
+
+  const [form, setForm] = useState(emptyForm);
+  const [featureInput, setFeatureInput] = useState('');
+  const [features, setFeatures] = useState<{ id: string; text: string }[]>([]);
+
+  const addTechnology = () => {
+    if (!techInput.trim()) return;
+
+    setTechnologies((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        name: techInput.trim(),
+      },
+    ]);
+
+    setTechInput('');
+  };
+
+  const removeTechnology = (id: string) => {
+    setTechnologies((prev) => prev.filter((tech) => tech.id !== id));
+  };
+
+  const addFeature = () => {
+    if (!featureInput.trim()) return;
+
+    setFeatures((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        text: featureInput.trim(),
+      },
+    ]);
+
+    setFeatureInput('');
+  };
+
+  const removeFeature = (id: string) => {
+    setFeatures((prev) => prev.filter((f) => f.id !== id));
+  };
+  const inputClass =
+    'w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all duration-200';
+
+  const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setForm((prev) => ({
         ...prev,
-      ])
-    }
-    setSaved(true)
-    setTimeout(() => { setSaved(false); setMode('idle'); setForm(emptyForm) }, 1400)
-  }
+        imagePreview: reader.result as string,
+      }));
+    };
 
-  const deleteProject = (id: number) => setProjects((prev) => prev.filter((p) => p.id !== id))
+    reader.readAsDataURL(file);
+  };
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const payload = {
+        title: form.title,
+        description: form.description,
+        longDescription: form.longDescription,
+        category: form.category,
+
+        technologies: technologies,
+        features: features,
+
+        liveUrl: form.liveUrl,
+        githubUrl: form.githubUrl,
+
+        challenges: form.challenges,
+        duration: form.duration,
+        role: form.role,
+
+        imagePreview: form.imagePreview,
+      };
+
+      await createProject(payload);
+
+      setSaved(true);
+
+      setTimeout(() => {
+        setSaved(false);
+        setMode('idle');
+        setForm(emptyForm);
+        setFeatures([]);
+        setTechnologies([]);
+      }, 1500);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -51,12 +144,17 @@ export default function ProjectManager() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading font-bold text-2xl text-foreground">Projects</h1>
+
           <p className="text-muted-foreground text-sm mt-1">{projects.length} projects total</p>
         </div>
+
         {mode === 'idle' && (
           <button
-            onClick={() => { setMode('new'); setForm(emptyForm) }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all duration-200 glow-cyan"
+            onClick={() => {
+              setMode('new');
+              setForm(emptyForm);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
           >
             <Plus size={16} />
             New Project
@@ -64,203 +162,359 @@ export default function ProjectManager() {
         )}
       </div>
 
-      {/* Form */}
+      {/* FORM */}
       <AnimatePresence>
         {mode !== 'idle' && (
           <motion.div
-            initial={{ opacity: 0, y: -16 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.35 }}
-            className="rounded-2xl border border-primary/25 bg-card p-6 md:p-8"
+            exit={{ opacity: 0, y: -15 }}
+            className="rounded-2xl border border-primary/20 bg-card p-6"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-heading font-bold text-lg text-foreground">
-                {mode === 'new' ? 'New Project' : 'Edit Project'}
-              </h2>
+              <h2 className="font-bold text-lg">Create Project</h2>
+
               <button
-                onClick={() => { setMode('idle'); setForm(emptyForm) }}
-                className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200"
+                onClick={() => {
+                  setMode('idle');
+                  setForm(emptyForm);
+                }}
               >
-                <X size={16} />
+                <X size={18} />
               </button>
             </div>
 
             {saved ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center gap-3 py-10 text-center"
-              >
-                <div className="w-12 h-12 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center glow-cyan">
-                  <CheckCircle size={24} className="text-primary" />
-                </div>
-                <p className="font-heading font-bold text-foreground">Project saved successfully!</p>
-              </motion.div>
+              <div className="flex flex-col items-center py-10">
+                <CheckCircle size={50} className="text-green-500" />
+                <p className="mt-4 font-semibold">Project Saved Successfully</p>
+              </div>
             ) : (
-              <form onSubmit={handleSave} className="flex flex-col gap-5">
-                {/* Title + Category */}
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <div className="sm:col-span-2">
-                    <label className={labelClass}>
-                      Project Title <span className="text-primary">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. DeFi Protocol Launch"
-                      value={form.title}
-                      onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Category</label>
-                    <select
-                      value={form.category}
-                      onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
-                      className={inputClass}
-                    >
-                      <option value="">Select category</option>
-                      {categories.map((c) => <option key={c}>{c}</option>)}
-                    </select>
-                  </div>
+              <form onSubmit={handleSave} className="space-y-5">
+                <div>
+                  <label className={labelClass}>Project Title</label>
+
+                  <input
+                    required
+                    className={inputClass}
+                    value={form.title}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        title: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
 
-                {/* Description */}
                 <div>
-                  <label className={labelClass}>Project Description</label>
+                  <label className={labelClass}>Description</label>
+
                   <textarea
                     rows={3}
-                    placeholder="Describe what you did, the challenge, and your approach..."
+                    className={inputClass}
                     value={form.description}
-                    onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                    className={`${inputClass} resize-none`}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        description: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
-                {/* Key results */}
                 <div>
-                  <label className={labelClass}>Key Results</label>
+                  <label className={labelClass}>Long Description</label>
+
                   <textarea
-                    rows={3}
-                    placeholder="List the outcomes, one per line (e.g. $12M raised at IDO)"
-                    value={form.results}
-                    onChange={(e) => setForm((p) => ({ ...p, results: e.target.value }))}
-                    className={`${inputClass} resize-none`}
+                    rows={6}
+                    className={inputClass}
+                    value={form.longDescription}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        longDescription: e.target.value,
+                      }))
+                    }
                   />
-                  <p className="text-xs text-muted-foreground mt-1.5 font-mono">
-                    Tip: one result per line — each becomes a bullet on the project card.
-                  </p>
                 </div>
 
-                {/* Tags + Link + Status */}
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className={labelClass}>Tags</label>
+                <div>
+                  <label className={labelClass}>Category</label>
+
+                  <select
+                    className={inputClass}
+                    value={form.category}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        category: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Web3">Web3</option>
+                    <option value="AI">AI</option>
+                    <option value="Ethical Hacking">Ethical Hacking</option>
+                    <option value="Marketing">Marketing</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className={labelClass}>Technologies</label>
+
+                  <div className="flex gap-2">
                     <input
-                      type="text"
-                      placeholder="Web3, DeFi, Community"
-                      value={form.tags}
-                      onChange={(e) => setForm((p) => ({ ...p, tags: e.target.value }))}
                       className={inputClass}
+                      placeholder="Next.js"
+                      value={techInput}
+                      onChange={(e) => setTechInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addTechnology();
+                        }
+                      }}
                     />
-                  </div>
-                  <div>
-                    <label className={labelClass}>External Link</label>
-                    <input
-                      type="url"
-                      placeholder="https://..."
-                      value={form.link}
-                      onChange={(e) => setForm((p) => ({ ...p, link: e.target.value }))}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Status</label>
-                    <select
-                      value={form.status}
-                      onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as 'draft' | 'published' }))}
-                      className={inputClass}
+
+                    <button
+                      type="button"
+                      onClick={addTechnology}
+                      className="px-4 rounded-xl bg-primary text-primary-foreground"
                     >
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
-                    </select>
+                      Add
+                    </button>
+                  </div>
+
+                  {technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {technologies.map((tech) => (
+                        <div
+                          key={tech.id}
+                          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20"
+                        >
+                          <span className="text-sm">{tech.name}</span>
+
+                          <button
+                            type="button"
+                            onClick={() => removeTechnology(tech.id)}
+                            className="text-red-500"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass}>Features</label>
+
+                  <div className="flex gap-2">
+                    <input
+                      className={inputClass}
+                      placeholder="e.g. Authentication system"
+                      value={featureInput}
+                      onChange={(e) => setFeatureInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addFeature();
+                        }
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={addFeature}
+                      className="px-4 rounded-xl bg-primary text-primary-foreground"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  {features.length > 0 && (
+                    <div className="flex flex-col gap-2 mt-4">
+                      {features.map((feature) => (
+                        <div
+                          key={feature.id}
+                          className="flex items-center justify-between px-3 py-2 rounded-xl bg-primary/10 border border-primary/20"
+                        >
+                          <span>{feature.text}</span>
+
+                          <button
+                            type="button"
+                            onClick={() => removeFeature(feature.id)}
+                            className="text-red-500"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Live URL</label>
+
+                    <input
+                      className={inputClass}
+                      value={form.liveUrl}
+                      onChange={(e) =>
+                        setForm((p) => ({
+                          ...p,
+                          liveUrl: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>GitHub URL</label>
+
+                    <input
+                      className={inputClass}
+                      value={form.githubUrl}
+                      onChange={(e) =>
+                        setForm((p) => ({
+                          ...p,
+                          githubUrl: e.target.value,
+                        }))
+                      }
+                    />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all duration-200 glow-cyan"
-                  >
-                    <Save size={15} />
-                    Save Project
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setMode('idle'); setForm(emptyForm) }}
-                    className="px-5 py-3 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all duration-200"
-                  >
-                    Cancel
-                  </button>
+                <div>
+                  <label className={labelClass}>Challenges</label>
+
+                  <textarea
+                    rows={4}
+                    className={inputClass}
+                    value={form.challenges}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        challenges: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Duration</label>
+
+                    <input
+                      className={inputClass}
+                      value={form.duration}
+                      onChange={(e) =>
+                        setForm((p) => ({
+                          ...p,
+                          duration: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>Role</label>
+
+                    <input
+                      className={inputClass}
+                      value={form.role}
+                      onChange={(e) =>
+                        setForm((p) => ({
+                          ...p,
+                          role: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>Project Image</label>
+
+                  <input type="file" accept="image/*" onChange={handleImageChange} />
+
+                  {form.imagePreview && (
+                    <div className="mt-4">
+                      <p className="text-sm text-muted-foreground mb-2">Image Preview</p>
+
+                      <img
+                        src={form.imagePreview}
+                        alt="Project Preview"
+                        className="w-full max-w-md h-64 object-cover rounded-xl border border-border"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground"
+                >
+                  {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                  Save Project
+                </button>
               </form>
             )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Projects list */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-center px-6 py-3 border-b border-border bg-secondary/30">
-          <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Project</span>
-          <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Category</span>
-          <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Status</span>
-          <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Actions</span>
+      {/* PROJECTS */}
+      <div className="rounded-2xl border border-border overflow-hidden">
+        <div className="p-4 border-b">
+          <h2 className="font-semibold">Existing Projects</h2>
         </div>
 
-        <AnimatePresence>
-          {projects.map((project) => (
-            <motion.div
-              key={project.id}
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-start px-6 py-4 border-b border-border/50 last:border-0 hover:bg-secondary/20 transition-colors duration-150"
-            >
-              <div className="min-w-0 pr-4">
-                <p className="text-sm text-foreground font-medium truncate">{project.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{project.results}</p>
+        {projects.map((project) => (
+          <div key={project._id} className="p-5 border-b border-border">
+            <div className="flex flex-col md:flex-row md:justify-between gap-4">
+              <div className="flex gap-4">
+                {project.imageUrl && (
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    className="w-28 h-28 rounded-xl object-cover border border-border"
+                  />
+                )}
+
+                <div>
+                  <h3 className="font-semibold text-lg">{project.title}</h3>
+
+                  <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <span className="px-2 py-1 text-xs rounded-lg bg-primary/10 text-primary">
+                      {project.category}
+                    </span>
+
+                    <span className="px-2 py-1 text-xs rounded-lg bg-secondary">
+                      {project.duration}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-2">Role: {project.role}</p>
+                </div>
               </div>
-              <span className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-xs font-mono border border-primary/20 whitespace-nowrap self-center">
-                {project.category}
-              </span>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-mono border whitespace-nowrap self-center ${
-                project.status === 'published'
-                  ? 'bg-primary/10 text-primary border-primary/20'
-                  : 'bg-secondary text-muted-foreground border-border'
-              }`}>
-                {project.status}
-              </span>
-              <div className="flex items-center gap-1.5 self-center">
-                <button className="p-1.5 rounded-lg hover:bg-primary/10 hover:text-primary text-muted-foreground transition-all duration-150" aria-label="Edit">
-                  <Edit2 size={14} />
-                </button>
-                <button
-                  onClick={() => deleteProject(project.id)}
-                  className="p-1.5 rounded-lg hover:bg-red-500/10 hover:text-red-400 text-muted-foreground transition-all duration-150"
-                  aria-label="Delete"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+
+              <button
+                onClick={() => project._id && deleteProject(project._id)}
+                className="self-start p-2 rounded-lg text-red-500 hover:bg-red-500/10"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
-  )
+  );
 }
