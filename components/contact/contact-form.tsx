@@ -1,61 +1,84 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
-import { Send, CheckCircle, Loader } from 'lucide-react'
+import { useState } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { Send, CheckCircle, Loader } from 'lucide-react';
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error'
+type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
-const services = [
-  'Token Launch & IDO Marketing',
-  'Community Building',
-  'Web3 PR & Media',
-  'Growth Marketing',
-  'SaaS Marketing',
-  'DeFi / NFT Strategy',
-  'Other',
-]
+const services = ['AI Automation', 'Web3', 'Marketing', 'Ethical Hacking', 'Other'];
 
-const budgets = [
-  'Under $2,000',
-  '$2,000 – $5,000',
-  '$5,000 – $15,000',
-  '$15,000+',
-  "Let's discuss",
-]
+const budgets = ['Under $100', '$100 – $500', '$500 – $1,000', '$1,000+', "Let's discuss"];
 
 export default function ContactForm() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0 })
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0 });
 
-  const [formState, setFormState] = useState<FormState>('idle')
+  const [formState, setFormState] = useState<FormState>('idle');
   const [form, setForm] = useState({
     name: '',
     email: '',
     service: '',
     budget: '',
     message: '',
-  })
+  });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormState('submitting')
-    // Simulate async submission
-    await new Promise((r) => setTimeout(r, 1800))
-    setFormState('success')
-  }
+    e.preventDefault();
+
+    try {
+      setFormState('submitting');
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.service || 'Portfolio Inquiry',
+          message: `
+Service: ${form.service}
+Budget: ${form.budget}
+
+${form.message}
+        `,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      setFormState('success');
+
+      setForm({
+        name: '',
+        email: '',
+        service: '',
+        budget: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error(error);
+      setFormState('error');
+    }
+  };
 
   const inputClass =
-    'w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all duration-200'
+    'w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all duration-200';
 
-  const labelClass = 'block text-sm font-medium text-foreground mb-1.5'
+  const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 
   return (
     <motion.div
@@ -83,11 +106,14 @@ export default function ContactForm() {
           </div>
           <h3 className="font-heading text-2xl font-bold text-foreground">Message Sent!</h3>
           <p className="text-muted-foreground max-w-sm leading-relaxed">
-            Thanks for reaching out. I&apos;ll review your message and get back to
-            you within 24 hours.
+            Thanks for reaching out. I&apos;ll review your message and get back to you within 24
+            hours.
           </p>
           <button
-            onClick={() => { setFormState('idle'); setForm({ name: '', email: '', service: '', budget: '', message: '' }) }}
+            onClick={() => {
+              setFormState('idle');
+              setForm({ name: '', email: '', service: '', budget: '', message: '' });
+            }}
             className="mt-2 px-5 py-2.5 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all duration-200"
           >
             Send another message
@@ -151,9 +177,13 @@ export default function ContactForm() {
                 onChange={handleChange}
                 className={inputClass}
               >
-                <option value="" disabled>Select a service</option>
+                <option value="" disabled>
+                  Select a service
+                </option>
                 {services.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
                 ))}
               </select>
             </div>
@@ -168,9 +198,13 @@ export default function ContactForm() {
                 onChange={handleChange}
                 className={inputClass}
               >
-                <option value="" disabled>Select budget</option>
+                <option value="" disabled>
+                  Select budget
+                </option>
                 {budgets.map((b) => (
-                  <option key={b} value={b}>{b}</option>
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
                 ))}
               </select>
             </div>
@@ -207,12 +241,19 @@ export default function ContactForm() {
               <>
                 <Send size={16} />
                 Send Message
-                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">→</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">
+                  →
+                </span>
               </>
             )}
           </button>
+          {formState === 'error' && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-500">
+              Failed to send message. Please try again.
+            </div>
+          )}
         </form>
       )}
     </motion.div>
-  )
+  );
 }

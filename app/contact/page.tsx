@@ -1,16 +1,16 @@
-import type { Metadata } from 'next'
-import Navbar from '@/components/navbar'
-import Footer from '@/components/footer'
-import ContactHero from '@/components/contact/contact-hero'
-import ContactForm from '@/components/contact/contact-form'
-import ContactInfo from '@/components/contact/contact-info'
-import FAQSection from '@/components/contact/faq-section'
+import type { Metadata } from 'next';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
+import ContactHero from '@/components/contact/contact-hero';
+import ContactForm from '@/components/contact/contact-form';
+import ContactInfo from '@/components/contact/contact-info';
+import FAQSection from '@/components/contact/faq-section';
 
 export const metadata: Metadata = {
   title: 'Contact — Alex Morgan | Web3 & Software Marketer',
   description:
     'Get in touch to discuss your Web3 project, token launch, community build, or SaaS growth strategy.',
-}
+};
 
 export default function ContactPage() {
   return (
@@ -28,10 +28,12 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-
+      {/*
       <FAQSection />
+
+*/}
 
       <Footer />
     </main>
-  )
+  );
 }

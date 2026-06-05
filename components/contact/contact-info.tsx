@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
-import { Mail, MapPin, Clock, AtSign, Globe, Send, GitBranch, Calendar } from 'lucide-react'
-import Link from 'next/link'
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { Mail, MapPin, Clock, AtSign, Globe, Send, GitBranch, Calendar } from 'lucide-react';
+import Link from 'next/link';
 
 const contactDetails = [
   {
@@ -30,23 +30,27 @@ const contactDetails = [
     value: 'Open to new projects',
     href: null,
   },
-]
+];
 
 const socials = [
   { icon: AtSign, label: 'Twitter / X', handle: '@alexweb3', href: '#' },
   { icon: Globe, label: 'LinkedIn', handle: 'in/alexmorgan', href: '#' },
   { icon: GitBranch, label: 'GitHub', handle: 'github/alexmorgan', href: '#' },
   { icon: Send, label: 'Telegram', handle: '@alexweb3mkt', href: '#' },
-]
+];
 
 const preferredStack = [
-  'Token Launches', 'DeFi Protocols', 'NFT Collections',
-  'SaaS Products', 'DAOs', 'Web3 Gaming',
-]
+  'Token Launches',
+  'DeFi Protocols',
+  'NFT Collections',
+  'SaaS Products',
+  'DAOs',
+  'Web3 Gaming',
+];
 
 export default function ContactInfo() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0 })
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0 });
 
   return (
     <motion.div
@@ -58,9 +62,7 @@ export default function ContactInfo() {
     >
       {/* Contact details card */}
       <div className="rounded-2xl border border-border bg-card p-7">
-        <h3 className="font-heading text-lg font-bold text-foreground mb-5">
-          Contact Information
-        </h3>
+        <h3 className="font-heading text-lg font-bold text-foreground mb-5">Contact Information</h3>
         <ul className="flex flex-col gap-4">
           {contactDetails.map(({ icon: Icon, label, value, href }) => (
             <li key={label} className="flex items-start gap-4">
@@ -87,9 +89,7 @@ export default function ContactInfo() {
 
       {/* Social links card */}
       <div className="rounded-2xl border border-border bg-card p-7">
-        <h3 className="font-heading text-lg font-bold text-foreground mb-5">
-          Connect on Social
-        </h3>
+        <h3 className="font-heading text-lg font-bold text-foreground mb-5">Connect on Social</h3>
         <ul className="flex flex-col gap-3">
           {socials.map(({ icon: Icon, label, handle, href }) => (
             <li key={label}>
@@ -106,7 +106,9 @@ export default function ContactInfo() {
                     {handle}
                   </p>
                 </div>
-                <span className="text-muted-foreground group-hover:text-primary text-sm transition-colors duration-200">→</span>
+                <span className="text-muted-foreground group-hover:text-primary text-sm transition-colors duration-200">
+                  →
+                </span>
               </a>
             </li>
           ))}
@@ -114,6 +116,8 @@ export default function ContactInfo() {
       </div>
 
       {/* Projects I work on */}
+
+      {/*
       <div className="rounded-2xl border border-border bg-card p-7">
         <h3 className="font-heading text-lg font-bold text-foreground mb-2">
           Projects I Work With
@@ -132,6 +136,7 @@ export default function ContactInfo() {
           ))}
         </div>
       </div>
+      */}
     </motion.div>
-  )
+  );
 }
