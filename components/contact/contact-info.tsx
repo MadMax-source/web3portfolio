@@ -9,8 +9,8 @@ const contactDetails = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'alex@web3marketer.io',
-    href: 'mailto:alex@web3marketer.io',
+    value: 'cryptosizglobal@gmail.com',
+    href: 'mailto:cryptosizglobal@gmail.com',
   },
   {
     icon: MapPin,
@@ -33,10 +33,20 @@ const contactDetails = [
 ];
 
 const socials = [
-  { icon: AtSign, label: 'Twitter / X', handle: '@alexweb3', href: '#' },
-  { icon: Globe, label: 'LinkedIn', handle: 'in/alexmorgan', href: '#' },
-  { icon: GitBranch, label: 'GitHub', handle: 'github/alexmorgan', href: '#' },
-  { icon: Send, label: 'Telegram', handle: '@alexweb3mkt', href: '#' },
+  {
+    icon: AtSign,
+    label: 'Twitter / X',
+    handle: '@cryptoosiz',
+    href: 'https://x.com/cryptoosiz?s=11',
+  },
+
+  {
+    icon: GitBranch,
+    label: 'GitHub',
+    handle: 'github/cryptoosiz',
+    href: 'https://github.com/cryptoosiz',
+  },
+  { icon: Send, label: 'Telegram', handle: '@cryptoosiz', href: 'https://t.me/cryptoosiz' },
 ];
 
 const preferredStack = [
