@@ -1,76 +1,91 @@
-'use client'
+'use client';
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { ArrowLeft, Clock, Tag, Calendar, ArrowUpRight } from 'lucide-react'
-import Link from 'next/link'
-import type { BlogPost } from '@/lib/blog-data'
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { ArrowLeft, Clock, Tag, Calendar, ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import type { BlogPost } from '@/lib/blog-data';
 
 function renderContent(content: string) {
-  const lines = content.split('\n')
-  const elements: React.ReactNode[] = []
-  let key = 0
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let key = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
+    const line = lines[i];
 
     if (line.startsWith('## ')) {
       elements.push(
-        <h2 key={key++} className="font-heading font-black text-2xl text-foreground mt-10 mb-4 leading-tight">
+        <h2
+          key={key++}
+          className="font-heading font-black text-2xl text-foreground mt-10 mb-4 leading-tight"
+        >
           {line.replace('## ', '')}
-        </h2>
-      )
+        </h2>,
+      );
     } else if (line.startsWith('**') && line.endsWith('**')) {
       elements.push(
         <p key={key++} className="font-semibold text-foreground mb-3">
           {line.replace(/\*\*/g, '')}
-        </p>
-      )
+        </p>,
+      );
     } else if (line.match(/^\d+\.\s/)) {
       elements.push(
         <li key={key++} className="text-muted-foreground leading-relaxed mb-2 ml-5 list-decimal">
           {line.replace(/^\d+\.\s/, '')}
-        </li>
-      )
+        </li>,
+      );
     } else if (line.startsWith('- ')) {
-      const parts = line.replace('- ', '').split(/\*\*(.+?)\*\*/g)
+      const parts = line.replace('- ', '').split(/\*\*(.+?)\*\*/g);
       elements.push(
         <li key={key++} className="text-muted-foreground leading-relaxed mb-2 ml-5 list-disc">
           {parts.map((part, pi) =>
-            pi % 2 === 1 ? <strong key={pi} className="text-foreground font-semibold">{part}</strong> : part
+            pi % 2 === 1 ? (
+              <strong key={pi} className="text-foreground font-semibold">
+                {part}
+              </strong>
+            ) : (
+              part
+            ),
           )}
-        </li>
-      )
+        </li>,
+      );
     } else if (line.trim() === '') {
-      elements.push(<div key={key++} className="h-3" />)
+      elements.push(<div key={key++} className="h-3" />);
     } else {
       // Inline bold parsing
-      const parts = line.split(/\*\*(.+?)\*\*/g)
+      const parts = line.split(/\*\*(.+?)\*\*/g);
       elements.push(
         <p key={key++} className="text-muted-foreground leading-relaxed mb-4">
           {parts.map((part, pi) =>
-            pi % 2 === 1 ? <strong key={pi} className="text-foreground font-semibold">{part}</strong> : part
+            pi % 2 === 1 ? (
+              <strong key={pi} className="text-foreground font-semibold">
+                {part}
+              </strong>
+            ) : (
+              part
+            ),
           )}
-        </p>
-      )
+        </p>,
+      );
     }
   }
 
-  return elements
+  return elements;
 }
 
 type Props = {
-  post: BlogPost
-  related: BlogPost[]
-}
+  post: BlogPost;
+  related: BlogPost[];
+};
 
 export default function BlogDetail({ post, related }: Props) {
-  const heroRef = useRef(null)
-  const contentRef = useRef(null)
-  const relatedRef = useRef(null)
-  const heroInView = useInView(heroRef, { once: true, amount: 0, margin: '200px' })
-  const contentInView = useInView(contentRef, { once: true, amount: 0, margin: '200px' })
-  const relatedInView = useInView(relatedRef, { once: true, amount: 0, margin: '200px' })
+  const heroRef = useRef(null);
+  const contentRef = useRef(null);
+  const relatedRef = useRef(null);
+  const heroInView = useInView(heroRef, { once: true, amount: 0, margin: '200px' });
+  const contentInView = useInView(contentRef, { once: true, amount: 0, margin: '200px' });
+  const relatedInView = useInView(relatedRef, { once: true, amount: 0, margin: '200px' });
 
   return (
     <main>
@@ -102,7 +117,10 @@ export default function BlogDetail({ post, related }: Props) {
               href="/blog"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors duration-200 w-fit group"
             >
-              <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform duration-200" />
+              <ArrowLeft
+                size={14}
+                className="group-hover:-translate-x-0.5 transition-transform duration-200"
+              />
               Back to Blog
             </Link>
 
@@ -124,9 +142,7 @@ export default function BlogDetail({ post, related }: Props) {
             </h1>
 
             {/* Excerpt */}
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {post.excerpt}
-            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">{post.excerpt}</p>
 
             {/* Meta row */}
             <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground font-mono border-t border-border pt-5">
@@ -170,12 +186,10 @@ export default function BlogDetail({ post, related }: Props) {
         </div>
       </section>
 
-      {/* Divider */}
       <div className="max-w-3xl mx-auto px-6">
         <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </div>
 
-      {/* ── Article body ───────────────────────────────────── */}
       <section ref={contentRef} className="py-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -183,9 +197,7 @@ export default function BlogDetail({ post, related }: Props) {
           transition={{ duration: 0.55, delay: 0.1 }}
           className="max-w-3xl mx-auto px-6"
         >
-          <div className="prose-custom">
-            {renderContent(post.content)}
-          </div>
+          <div className="prose-custom">{renderContent(post.content)}</div>
         </motion.div>
       </section>
 
@@ -194,7 +206,9 @@ export default function BlogDetail({ post, related }: Props) {
         <div className="rounded-2xl border border-primary/20 bg-card p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
           <div className="flex flex-col gap-1">
             <span className="text-sm font-semibold text-foreground">Found this useful?</span>
-            <span className="text-xs text-muted-foreground">Share it with your network or reach out to work together.</span>
+            <span className="text-xs text-muted-foreground">
+              Share it with your network or reach out to work together.
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -202,7 +216,10 @@ export default function BlogDetail({ post, related }: Props) {
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all duration-200 glow-cyan group"
             >
               Work with me
-              <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+              <ArrowUpRight
+                size={13}
+                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
+              />
             </Link>
             <Link
               href="/blog"
@@ -226,7 +243,9 @@ export default function BlogDetail({ post, related }: Props) {
             >
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-border" />
-                <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">More Articles</span>
+                <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+                  More Articles
+                </span>
                 <div className="h-px flex-1 bg-border" />
               </div>
 
@@ -275,5 +294,5 @@ export default function BlogDetail({ post, related }: Props) {
         </section>
       )}
     </main>
-  )
+  );
 }

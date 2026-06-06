@@ -2,32 +2,33 @@
 
 import { useState } from 'react';
 import AdminSidebar from './admin-sidebar';
-import AdminDashboard from './admin-dashboard';
 import BlogManager from './blog-manager';
 import ProjectManager from './project-manager';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-type Tab = 'dashboard' | 'blog' | 'projects';
+type Tab = 'blog' | 'projects';
 
 export default function AdminShell() {
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [activeTab, setActiveTab] = useState<Tab>('projects');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderPanel = () => {
-    if (activeTab === 'blog') return <BlogManager />;
-    if (activeTab === 'projects') return <ProjectManager />;
-    return <AdminDashboard setActiveTab={setActiveTab} />;
+    if (activeTab === 'blog') {
+      return <BlogManager />;
+    }
+
+    return <ProjectManager />;
   };
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Desktop sidebar */}
+      {/* Desktop Sidebar */}
       <div className="hidden lg:flex">
         <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
           <>
@@ -39,6 +40,7 @@ export default function AdminShell() {
               className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
+
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
@@ -49,7 +51,7 @@ export default function AdminShell() {
               <AdminSidebar
                 activeTab={activeTab}
                 setActiveTab={(tab) => {
-                  setActiveTab(tab as Tab);
+                  setActiveTab(tab);
                   setSidebarOpen(false);
                 }}
               />
@@ -58,30 +60,30 @@ export default function AdminShell() {
         )}
       </AnimatePresence>
 
-      {/* Main content */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
         <header className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200"
-            aria-label="Open menu"
           >
             <Menu size={20} />
           </button>
+
           <div className="lg:hidden" />
+
           <div className="flex items-center gap-4 ml-auto">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="text-xs font-mono text-muted-foreground">Live</span>
             </div>
+
             <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
               <span className="text-primary font-mono text-xs font-bold">A</span>
             </div>
           </div>
         </header>
 
-        {/* Panel */}
         <main className="flex-1 p-6 md:p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
